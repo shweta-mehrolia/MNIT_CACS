@@ -1,0 +1,104 @@
+package application;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.sql.*;
+import com.sun.javafx.scene.accessibility.Action;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.input.*;
+import javafx.stage.Stage;
+
+public class signupController implements Initializable {
+
+	Connection conn=null;
+	ObservableList<String> dept=FXCollections.observableArrayList("Select","Computer Science","Electronics Engineering",
+			"Electrical Engineering","Civil Engineering","Mechanical Engineering","Chemical Engineering",
+			"Metallurgy and Materials Science","Architecture","Physics","Chemistry","Mathematics","Humanities");
+	
+	ObservableList<String> soc=FXCollections.observableArrayList("Select","Music Society","Litsoc","Dramatics","NSS","Energy Club",
+			"Rotract","Film And Photography","Alcom","Technical Society");
+	
+	ObservableList<String> yr=FXCollections.observableArrayList("Select","First","Second","Third","Fourth","Fifth","N.A.");
+	
+	ObservableList<String> ty=FXCollections.observableArrayList("Select","Faculty","Student","Student Co-ordinator");
+	@FXML
+	private ChoiceBox<String> society;
+	@FXML
+	private ChoiceBox<String> department;
+	@FXML
+	private ChoiceBox<String> year;
+	@FXML
+	private ChoiceBox<String> type;
+	@FXML
+	private TextField name;
+	@FXML
+	private TextField email;
+	@FXML
+	private PasswordField password;
+	@FXML
+	private PasswordField repassword;
+	@FXML 
+	private TextField contact1;
+	@FXML
+	private TextField contact2;
+	private Stage dialogStage;
+	private Scene scene;
+	
+	@Override
+	public void initialize(URL url,ResourceBundle rb)
+	{
+		department.setItems(dept);
+		department.setValue("Select");
+		society.setItems(soc);
+		society.setValue("Select");
+		year.setItems(yr);
+		year.setValue("Select");
+		type.setItems(ty);
+		type.setValue("Select");
+	}
+	
+	@FXML
+	public void signup(MouseEvent event)
+	{
+		try
+		{
+			String em=email.getText().toString();
+			String pwd=password.getText().toString();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn=DriverManager.getConnection("jdbc:mysql://localhost/dbms?user=root&password=pucchi143");
+			PreparedStatement st=conn.prepareStatement("insert into users values(?,?,?,?,?,?,?,?,?)");
+			st.setString(1,name.getText().toString());
+			st.setString(2,email.getText().toString());
+			st.setString(3,password.getText().toString());
+			st.setString(4,society.getValue().toString());
+			st.setString(5,department.getValue().toString());
+			st.setString(6,year.getValue().toString());
+			st.setString(7,contact1.getText().toString());
+			st.setString(8,contact2.getText().toString());
+			st.setString(9,type.getValue().toString());
+			st.executeUpdate();
+			infoBox("Login Successfull",null,"Success" );
+            Node node = (Node)event.getSource();
+            dialogStage = (Stage) node.getScene().getWindow();
+            dialogStage.close();
+            scene = new Scene(FXMLLoader.load(getClass().getResource("Welcome.fxml")));
+        	dialogStage.setScene(scene);
+        	dialogStage.show();
+		}
+		catch(Exception e)
+		{
+			
+		}
+	}
+
+	private void infoBox(String string, Object object, String string2) {
+		// TODO Auto-generated method stub
+		
+	}
+}
