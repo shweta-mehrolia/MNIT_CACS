@@ -45,12 +45,22 @@ public class createEventController implements Initializable {
 	@FXML
 	public void back(MouseEvent event) throws IOException
 	{
-		infoBox("Login Successfull",null,"Success" );
+		/*infoBox("Login Successfull",null,"Success" );
         Node node = (Node)event.getSource();
         dialogStage = (Stage) node.getScene().getWindow();
         dialogStage.close();
         Scene scene = new Scene(FXMLLoader.load(getClass().getResource("fwelcome.fxml")));
     	dialogStage.setScene(scene);
+    	dialogStage.show();*/
+		FXMLLoader loader=new FXMLLoader(getClass().getResource("fwelcome.fxml"));
+    	Parent root=(Parent)loader.load();
+    	fwelcomeController set=loader.getController();
+    	set.myfunc(ses);
+        Node node = (Node)event.getSource();
+        dialogStage = (Stage) node.getScene().getWindow();
+        dialogStage.close();
+       // scene = new Scene(FXMLLoader.load(getClass().getResource("fwelcome.fxml")));
+    	dialogStage.setScene(new Scene(root));
     	dialogStage.show();
 	}
 	
