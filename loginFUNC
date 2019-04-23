@@ -6,7 +6,8 @@ import java.sql.*;
 import com.sun.javafx.scene.accessibility.Action;
 import javafx.scene.*;
 import javafx.scene.control.*;
-
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,6 +16,8 @@ import javafx.stage.Stage;
 
 public class SampleController implements Initializable {
 	
+	
+	
 	Connection conn=null;
 	//String session="";
 	@FXML
@@ -22,6 +25,9 @@ public class SampleController implements Initializable {
 	
 	@FXML
 	private PasswordField password;
+	
+	@FXML
+	private ChoiceBox<String> society;
 
 	private Stage dialogStage;
 
@@ -30,13 +36,14 @@ public class SampleController implements Initializable {
 	@Override
 	public void initialize(URL url,ResourceBundle rb)
 	{
-		
+		//society.setValue("select");
+		//society.setItems(soc);
 	    System.out.println("initialize");
 	   // PasswordField password;
 	}
 	
 	@FXML
-	public void  login(MouseEvent event)
+	public void login(MouseEvent event)
 	{
 		try
 		{
@@ -51,19 +58,29 @@ public class SampleController implements Initializable {
 			ResultSet rs=st1.executeQuery();
 			if(rs.next())
 			{
-				infoBox("Login Successfull",null,"Success" );
-                Node node = (Node)event.getSource();
-                dialogStage = (Stage) node.getScene().getWindow();
-                dialogStage.close();
+				
+               // dialogStage.close();
                 System.out.println(rs.getString(9));
                 if(rs.getString(9).equals("Faculty"))
                 {
-                	scene = new Scene(FXMLLoader.load(getClass().getResource("fwelcome.fxml")));
-                	dialogStage.setScene(scene);
+                	FXMLLoader loader=new FXMLLoader(getClass().getResource("fwelcome.fxml"));
+                	Parent root=(Parent)loader.load();
+                	
+                	fwelcomeController set=loader.getController();
+                	set.myfunc(em);
+                    Node node = (Node)event.getSource();
+                    dialogStage = (Stage) node.getScene().getWindow();
+                    dialogStage.close();
+                   // scene = new Scene(FXMLLoader.load(getClass().getResource("fwelcome.fxml")));
+                	dialogStage.setScene(new Scene(root));
                 	dialogStage.show();
                 }
                 else
                 {
+                	//infoBox("Login Successfull",null,"Success" );
+                    Node node = (Node)event.getSource();
+                    dialogStage = (Stage) node.getScene().getWindow();
+                    dialogStage.close();
                 	scene = new Scene(FXMLLoader.load(getClass().getResource("swelcome.fxml")));
                     dialogStage.setScene(scene);
                     dialogStage.show();
