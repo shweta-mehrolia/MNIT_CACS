@@ -47,6 +47,12 @@ public class signupController implements Initializable {
 	private TextField contact1;
 	@FXML
 	private TextField contact2;
+	@FXML
+	private Label emailError;
+	@FXML
+	private Label passError;
+	@FXML
+	private Label RePassError;
 	private Stage dialogStage;
 	private Scene scene;
 	
@@ -68,21 +74,35 @@ public class signupController implements Initializable {
 	{
 		try
 		{
-			String em=email.getText().toString();
-			String pwd=password.getText().toString();
 			Class.forName("com.mysql.jdbc.Driver");
 			conn=DriverManager.getConnection("jdbc:mysql://localhost/dbms?user=root&password=pucchi143");
+			String socid="";
+			if(email.getText().toString().endsWith("@mnit.ac.in") && password.getText().toString().length()>=5 && password.getText().toString().equals(repassword.getText().toString())){
+				PreparedStatement st2=conn.prepareStatement("select socid from society where sname=?");
+				st2.setString(1,society.getValue().toString());
+				//PrintWriter pw=response.getWriter();
+				ResultSet rs2=st2.executeQuery();
+				if(rs2.next())
+				{
+					socid = rs2.getString(1);
+				}
+			System.out.println("try");
+			String em=email.getText().toString();
+			String pwd=password.getText().toString();
+			System.out.println("connection");
 			PreparedStatement st=conn.prepareStatement("insert into users values(?,?,?,?,?,?,?,?,?)");
 			st.setString(1,name.getText().toString());
-			st.setString(2,email.getText().toString());
-			st.setString(3,password.getText().toString());
-			st.setString(4,society.getValue().toString());
+			st.setString(2,em);
+			st.setString(3,pwd);
+			st.setString(4,socid);
 			st.setString(5,department.getValue().toString());
 			st.setString(6,year.getValue().toString());
 			st.setString(7,contact1.getText().toString());
 			st.setString(8,contact2.getText().toString());
 			st.setString(9,type.getValue().toString());
+			System.out.println(name.getText().toString()+em+pwd+society.getValue().toString()+department.getValue().toString()+year.getValue().toString()+contact1.getText().toString()+contact2.getText().toString()+type.getValue().toString());
 			st.executeUpdate();
+			System.out.println("value inserted");
 			infoBox("Login Successfull",null,"Success" );
             Node node = (Node)event.getSource();
             dialogStage = (Stage) node.getScene().getWindow();
@@ -90,10 +110,42 @@ public class signupController implements Initializable {
             scene = new Scene(FXMLLoader.load(getClass().getResource("Welcome.fxml")));
         	dialogStage.setScene(scene);
         	dialogStage.show();
+        	conn.close();
+			}
+			
+			else
+			{
+				if(email.getText().toString().endsWith("@mnit.ac.in")==false)
+				{
+					email.setText("");
+					emailError.setText("email end - mnit.ac.in");
+				}
+				//	response.sendRedirect("signup.jsp?error1=!! E-Mail ID must end with mnit.ac.in !!");
+				else if(password.getText().toString().length()<5)
+				{
+					emailError.setText("");
+					password.setText("");
+					repassword.setText("");
+					passError.setText("password len > 5");
+				}
+					//response.sendRedirect("signup.jsp?error2=!! Password should be of atleast 5 characters !!");
+				else if(password.getText().toString().equals(repassword.getText().toString())==false)
+				{
+					passError.setText("");
+					emailError.setText("");
+					password.setText("");
+					repassword.setText("");
+					RePassError.setText("passwords don't match");
+				}
+					//response.sendRedirect("signup.jsp?error3=!! passwords do not  match !!");
+				//else if()
+				//cn1.close();
+				conn.close();
+			}
 		}
 		catch(Exception e)
 		{
-			
+			e.printStackTrace();
 		}
 	}
 
